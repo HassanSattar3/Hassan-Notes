@@ -29,6 +29,44 @@ class NotesApp {
         
         // Only check URL params after a small delay to prevent initial selection on PWA
         setTimeout(() => this.initializeFromUrl(), 100);
+        
+        this.initializeIOSInputFixes();
+    }
+
+    initializeIOSInputFixes() {
+        // Fix for iOS PWA input focus
+        const inputs = [this.noteTitleInput, this.noteContentInput, this.searchInput];
+        inputs.forEach(input => {
+            if (!input) return;
+            
+            // Fix for iOS focus issues
+            input.addEventListener('touchstart', (e) => {
+                if (window.navigator.standalone) {
+                    e.preventDefault();
+                    input.focus();
+                }
+            });
+
+            // Ensure proper cursor positioning
+            input.addEventListener('focus', () => {
+                if (window.navigator.standalone) {
+                    window.scrollTo(0, 0);
+                }
+            });
+        });
+
+        // Fix for contenteditable on iOS
+        if (this.noteContentInput) {
+            this.noteContentInput.addEventListener('touchend', (e) => {
+                if (window.navigator.standalone) {
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(e.target);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            });
+        }
     }
 
     bindEvents() {
