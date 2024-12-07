@@ -4,6 +4,7 @@
     "description": "A personal note-taking application by Hassan",
     "display": "standalone",
     "background_color": "#f8f9fa",
+    "theme_color": "transparent",
     "orientation": "any",
     "categories": ["productivity", "utilities"],
     "display_override": ["standalone", "minimal-ui"],
