@@ -315,6 +315,47 @@ main {
     margin-bottom: 0.5rem;
 }
 
+.editor-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.collaborators-indicator {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.collaborator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+}
+
+.collaborator-count {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
 .delete-btn {
     background: none;
     border: none;
@@ -384,4 +425,30 @@ main {
     color: #dc3545;
     background-color: rgba(220, 53, 69, 0.1);
 } 
+
+.note-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.note-card-share,
+.note-card-delete {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-color);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    border-radius: 4px;
+}
+
+.note-card-share:hover,
+.note-card-delete:hover {
+    opacity: 1;
+    background-color: var(--hover-color);
+}
+
+.note-card-share {
+    color: var(--accent-color);
 } 

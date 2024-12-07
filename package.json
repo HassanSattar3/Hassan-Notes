@@ -1,0 +1,13 @@
+{
+  "name": "hassan-notes",
+  "version": "1.0.0",
+  "description": "Real-time collaborative note-taking app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.13.0"
+  }
+} 

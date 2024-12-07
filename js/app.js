@@ -11,6 +11,11 @@ class NotesApp {
         this.searchInput = document.getElementById('searchInput');
         this.darkModeToggle = document.getElementById('darkModeToggle');
         this.deleteNoteBtn = document.getElementById('deleteNoteBtn');
+        this.collaboratorsIndicator = document.getElementById('collaboratorsIndicator');
+        this.activeCollaborators = 0;
+        this.ws = null;
+        this.isTyping = false;
+        this.typingTimeout = null;
         
         // Initialize dark mode
         this.isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -21,6 +26,7 @@ class NotesApp {
         
         // Hide editor initially if no notes
         this.noteEditor.style.display = this.notes.length ? 'flex' : 'none';
+        this.initializeFromUrl();
     }
 
     bindEvents() {
@@ -128,6 +134,12 @@ class NotesApp {
     }
 
     selectNote(noteId) {
+        // Disconnect from previous WebSocket if exists
+        if (this.ws) {
+            this.ws.close();
+            this.ws = null;
+        }
+
         this.selectedNoteId = noteId;
         const note = this.notes.find(n => n.id === noteId);
         if (note) {
@@ -140,7 +152,75 @@ class NotesApp {
             if (note.title === 'Untitled Note' && !note.content) {
                 this.noteTitleInput.focus();
             }
+
+            // Connect to WebSocket for real-time collaboration
+            this.connectToWebSocket(noteId);
         }
+    }
+
+    connectToWebSocket(noteId) {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}?noteId=${noteId}`;
+        this.ws = new WebSocket(wsUrl);
+
+        this.ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'collaborators') {
+                this.updateCollaboratorsCount(data.count);
+            } else {
+                this.handleCollaborativeUpdate(data);
+            }
+        };
+
+        this.ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        this.ws.onopen = () => {
+            this.updateCollaboratorsIndicator(true);
+        };
+
+        this.ws.onclose = () => {
+            this.updateCollaboratorsIndicator(false);
+        };
+    }
+
+    updateCollaboratorsCount(count) {
+        this.activeCollaborators = count;
+        this.updateCollaboratorsIndicator(true);
+    }
+
+    updateCollaboratorsIndicator(connected) {
+        if (!connected) {
+            this.collaboratorsIndicator.innerHTML = '';
+            return;
+        }
+
+        if (this.activeCollaborators > 0) {
+            this.collaboratorsIndicator.innerHTML = `
+                <div class="collaborator-dot"></div>
+                <span class="collaborator-count">${this.activeCollaborators} collaborator${this.activeCollaborators !== 1 ? 's' : ''} online</span>
+            `;
+        } else {
+            this.collaboratorsIndicator.innerHTML = '';
+        }
+    }
+
+    handleCollaborativeUpdate(data) {
+        const note = this.notes.find(n => n.id === this.selectedNoteId);
+        if (!note) return;
+
+        if (data.type === 'title') {
+            note.title = data.content;
+            this.noteTitleInput.value = data.content;
+        } else if (data.type === 'content') {
+            note.content = data.content;
+            this.noteContentInput.innerHTML = data.content;
+        }
+
+        note.updatedAt = new Date().toISOString();
+        this.saveNotes();
+        this.render();
     }
 
     updateCurrentNote() {
@@ -148,9 +228,28 @@ class NotesApp {
         
         const note = this.notes.find(n => n.id === this.selectedNoteId);
         if (note) {
-            note.title = this.noteTitleInput.value;
-            note.content = this.noteContentInput.innerHTML;
+            const title = this.noteTitleInput.value;
+            const content = this.noteContentInput.innerHTML;
+
+            note.title = title;
+            note.content = content;
             note.updatedAt = new Date().toISOString();
+            
+            // Send updates through WebSocket
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                // Debounce content updates to prevent flooding
+                clearTimeout(this.typingTimeout);
+                this.typingTimeout = setTimeout(() => {
+                    this.ws.send(JSON.stringify({
+                        type: 'title',
+                        content: title
+                    }));
+                    this.ws.send(JSON.stringify({
+                        type: 'content',
+                        content: content
+                    }));
+                }, 300);
+            }
             
             this.saveNotes();
             this.render();
@@ -201,14 +300,61 @@ class NotesApp {
                          data-id="${note.id}">
                         <div class="note-card-header">
                             <h3>${note.title || 'Untitled Note'}</h3>
-                            <button class="note-card-delete" title="Delete note">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="note-card-actions">
+                                <button class="note-card-share" title="Share note">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="note-card-delete" title="Delete note">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                         <p>${this.stripHtml(note.content).substring(0, 100)}${note.content.length > 100 ? '...' : ''}</p>
                         <small>Last updated: ${this.formatDate(note.updatedAt)}</small>
                     </div>
                 `).join('');
+
+            // Add share button event listeners
+            document.querySelectorAll('.note-card-share').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const noteId = e.target.closest('.note-card').dataset.id;
+                    this.shareNote(noteId);
+                });
+            });
+        }
+    }
+
+    shareNote(noteId) {
+        const note = this.notes.find(n => n.id === noteId);
+        if (!note) return;
+
+        const shareUrl = `${window.location.origin}${window.location.pathname}?note=${noteId}`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: note.title,
+                text: 'Check out this note!',
+                url: shareUrl
+            }).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => alert('Share link copied to clipboard!'))
+                .catch(err => alert('Failed to copy share link'));
+        }
+    }
+
+    initializeFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedNoteId = urlParams.get('note');
+        
+        if (sharedNoteId) {
+            const note = this.notes.find(n => n.id === sharedNoteId);
+            if (note) {
+                this.selectNote(sharedNoteId);
+                // Clean the URL without reloading the page
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
     }
 }
