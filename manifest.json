@@ -2,7 +2,6 @@
     "name": "Hassan Notes",
     "short_name": "Hassan Notes",
     "description": "A personal note-taking application by Hassan",
-    "start_url": "/Hassan-Notes/",
     "display": "standalone",
     "background_color": "#f8f9fa",
     "theme_color": "#00875A",
