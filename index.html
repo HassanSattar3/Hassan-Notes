@@ -14,6 +14,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Hassan Notes">
     <meta name="theme-color" content="transparent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- Fix for iOS input focus -->
+    <style>
+        input, [contenteditable=true] {
+            -webkit-user-select: text;
+            user-select: text;
+            -webkit-tap-highlight-color: transparent;
+        }
+        @supports (-webkit-touch-callout: none) {
+            input, [contenteditable=true] {
+                cursor: text;
+            }
+        }
+    </style>
     
     <!-- iOS icons -->
     <link rel="apple-touch-icon" href="images/icon-192x192.png">
