@@ -27,7 +27,19 @@ class NotesApp {
         this.newNoteBtn.addEventListener('click', () => this.createNewNote());
         this.notesContainer.addEventListener('click', (e) => {
             const noteCard = e.target.closest('.note-card');
-            if (noteCard) {
+            const deleteBtn = e.target.closest('.note-card-delete');
+            
+            if (deleteBtn) {
+                e.stopPropagation(); // Prevent note selection when clicking delete
+                const noteId = deleteBtn.closest('.note-card').dataset.id;
+                const note = this.notes.find(n => n.id === noteId);
+                if (note) {
+                    const confirmDelete = confirm(`Are you sure you want to delete "${note.title || 'Untitled Note'}"?`);
+                    if (confirmDelete) {
+                        this.deleteNote(noteId);
+                    }
+                }
+            } else if (noteCard) {
                 this.selectNote(noteCard.dataset.id);
             }
         });
@@ -183,7 +195,12 @@ class NotesApp {
                 .map(note => `
                     <div class="note-card ${note.id === this.selectedNoteId ? 'selected' : ''}" 
                          data-id="${note.id}">
-                        <h3>${note.title || 'Untitled Note'}</h3>
+                        <div class="note-card-header">
+                            <h3>${note.title || 'Untitled Note'}</h3>
+                            <button class="note-card-delete" title="Delete note">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                         <p>${this.stripHtml(note.content).substring(0, 100)}${note.content.length > 100 ? '...' : ''}</p>
                         <small>Last updated: ${this.formatDate(note.updatedAt)}</small>
                     </div>
