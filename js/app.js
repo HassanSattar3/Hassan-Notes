@@ -24,9 +24,11 @@ class NotesApp {
         this.bindEvents();
         this.render();
         
-        // Hide editor initially if no notes
-        this.noteEditor.style.display = this.notes.length ? 'flex' : 'none';
-        this.initializeFromUrl();
+        // Always hide editor initially
+        this.noteEditor.style.display = 'none';
+        
+        // Only check URL params after a small delay to prevent initial selection on PWA
+        setTimeout(() => this.initializeFromUrl(), 100);
     }
 
     bindEvents() {
@@ -325,23 +327,91 @@ class NotesApp {
         }
     }
 
-    shareNote(noteId) {
+    async shareNote(noteId) {
         const note = this.notes.find(n => n.id === noteId);
         if (!note) return;
 
         const shareUrl = `${window.location.origin}${window.location.pathname}?note=${noteId}`;
         
-        if (navigator.share) {
-            navigator.share({
-                title: note.title,
-                text: 'Check out this note!',
-                url: shareUrl
-            }).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(shareUrl)
-                .then(() => alert('Share link copied to clipboard!'))
-                .catch(err => alert('Failed to copy share link'));
+        // Check if running as PWA
+        const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                     window.navigator.standalone;
+
+        try {
+            if (navigator.share && !isPWA) {
+                // Use Web Share API if available and not running as PWA
+                await navigator.share({
+                    title: note.title,
+                    text: 'Check out this note!',
+                    url: shareUrl
+                });
+            } else {
+                // Fallback to custom share dialog
+                this.showShareDialog(shareUrl, note.title);
+            }
+        } catch (error) {
+            console.error('Sharing failed:', error);
+            this.showShareDialog(shareUrl, note.title);
         }
+    }
+
+    showShareDialog(shareUrl, noteTitle) {
+        // Create and show a custom share dialog
+        const dialog = document.createElement('div');
+        dialog.className = 'share-dialog';
+        dialog.innerHTML = `
+            <div class="share-dialog-content">
+                <h3>Share "${noteTitle}"</h3>
+                <div class="share-options">
+                    <button class="share-option" data-action="copy">
+                        <i class="fas fa-copy"></i>
+                        Copy Link
+                    </button>
+                    <button class="share-option" data-action="email">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </button>
+                    <button class="share-option" data-action="messages">
+                        <i class="fas fa-comment"></i>
+                        Messages
+                    </button>
+                </div>
+                <button class="share-dialog-close">Close</button>
+            </div>
+        `;
+
+        // Add event listeners for share options
+        dialog.querySelector('[data-action="copy"]').addEventListener('click', () => {
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                    alert('Link copied to clipboard!');
+                    document.body.removeChild(dialog);
+                })
+                .catch(err => alert('Failed to copy link'));
+        });
+
+        dialog.querySelector('[data-action="email"]').addEventListener('click', () => {
+            window.location.href = `mailto:?subject=${encodeURIComponent(noteTitle)}&body=${encodeURIComponent(shareUrl)}`;
+            document.body.removeChild(dialog);
+        });
+
+        dialog.querySelector('[data-action="messages"]').addEventListener('click', () => {
+            window.location.href = `sms:&body=${encodeURIComponent(shareUrl)}`;
+            document.body.removeChild(dialog);
+        });
+
+        dialog.querySelector('.share-dialog-close').addEventListener('click', () => {
+            document.body.removeChild(dialog);
+        });
+
+        // Close dialog when clicking outside
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) {
+                document.body.removeChild(dialog);
+            }
+        });
+
+        document.body.appendChild(dialog);
     }
 
     initializeFromUrl() {
