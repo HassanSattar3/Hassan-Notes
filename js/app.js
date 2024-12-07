@@ -101,8 +101,8 @@ class NotesApp {
     updateTheme() {
         document.documentElement.setAttribute('data-theme', this.isDarkMode ? 'dark' : 'light');
         this.darkModeToggle.innerHTML = this.isDarkMode ? 
-            '<i class="fas fa-sun"></i>' : 
-            '<i class="fas fa-moon"></i>';
+            '<i class="fas fa-sun" title="Switch to light mode"></i>' : 
+            '<i class="fas fa-moon" title="Switch to dark mode"></i>';
         
         // Update PWA theme color based on dark/light mode
         const themeColor = this.isDarkMode ? '#00d488' : '#00b377';
