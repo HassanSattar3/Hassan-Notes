@@ -6,16 +6,40 @@
     "display": "standalone",
     "background_color": "#f8f9fa",
     "theme_color": "#00875A",
- "icons": [
-    {
-        "src": "/Hassan-Notes/images/icon-192x192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-    },
-    {
-        "src": "/Hassan-Notes/images/icon-512x512.png",
-        "sizes": "512x512",
-        "type": "image/png"
-    }
-]
+    "orientation": "any",
+    "categories": ["productivity", "utilities"],
+    "display_override": ["standalone", "minimal-ui"],
+    "scope": "/Hassan-Notes/",
+    "icons": [
+        {
+            "src": "/Hassan-Notes/images/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/Hassan-Notes/images/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/Hassan-Notes/images/icon-152x152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/Hassan-Notes/images/icon-167x167.png",
+            "sizes": "167x167",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/Hassan-Notes/images/icon-180x180.png",
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
 } 

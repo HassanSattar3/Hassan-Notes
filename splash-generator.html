@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Splash Screen Generator</title>
+</head>
+<body>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <div id="controls" style="margin: 20px;">
+        <button onclick="loadIconAndGenerate()" style="padding: 10px 20px; font-size: 16px;">Generate All Splash Screens</button>
+        <div id="status" style="margin-top: 10px; color: #666;"></div>
+        <div id="downloads"></div>
+    </div>
+
+    <script>
+        // iOS splash screen dimensions
+        const screens = [
+            { width: 2048, height: 2732, name: 'apple-splash-2048-2732.png' }, // 12.9" iPad Pro
+            { width: 1668, height: 2388, name: 'apple-splash-1668-2388.png' }, // 11" iPad Pro
+            { width: 1536, height: 2048, name: 'apple-splash-1536-2048.png' }, // 9.7" iPad
+            { width: 1125, height: 2436, name: 'apple-splash-1125-2436.png' }, // iPhone X/XS
+            { width: 1242, height: 2688, name: 'apple-splash-1242-2688.png' }  // iPhone XS Max
+        ];
+
+        function loadIconAndGenerate() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Loading icon...';
+
+            const icon = new Image();
+            icon.onload = () => {
+                statusDiv.textContent = 'Generating splash screens...';
+                generateAll(icon);
+                statusDiv.textContent = 'Done! Click the links below to download each splash screen.';
+            };
+            icon.onerror = () => {
+                statusDiv.textContent = 'Error: Could not load icon. Make sure icon-512x512.png exists in the images folder.';
+            };
+            icon.src = '/Hassan-Notes/images/icon-512x512.png';
+        }
+
+        function generateSplashScreen(width, height, icon) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = width;
+            canvas.height = height;
+
+            // Fill background with your theme color
+            ctx.fillStyle = '#00875A';
+            ctx.fillRect(0, 0, width, height);
+
+            // Calculate icon size (30% of the smaller screen dimension)
+            const iconSize = Math.min(width, height) * 0.3;
+            
+            // Draw the icon in the center
+            const x = (width - iconSize) / 2;
+            const y = (height - iconSize) / 2;
+            ctx.drawImage(icon, x, y, iconSize, iconSize);
+
+            return canvas.toDataURL('image/png');
+        }
+
+        function generateAll(icon) {
+            const downloadsDiv = document.getElementById('downloads');
+            downloadsDiv.innerHTML = '';
+
+            screens.forEach(screen => {
+                const dataUrl = generateSplashScreen(screen.width, screen.height, icon);
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = screen.name;
+                link.innerHTML = `Download ${screen.name} (${screen.width}x${screen.height})<br>`;
+                downloadsDiv.appendChild(link);
+            });
+        }
+    </script>
+</body>
+</html> 
