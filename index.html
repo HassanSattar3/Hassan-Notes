@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hassan Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00875A">
+    <link rel="icon" type="image/png" href="images/icon-192x192.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1><i class="fas fa-feather-alt"></i> Hassan Notes</h1>
+                </div>
+                <div class="header-right">
+                    <button id="darkModeToggle" class="icon-button">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="newNoteBtn" class="new-note-btn">
+                        <i class="fas fa-plus"></i>
+                        New Note
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="notes-sidebar">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search notes...">
+                </div>
+                <div class="notes-container" id="notesContainer">
+                    <!-- Notes will be dynamically added here -->
+                </div>
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-book-open empty-icon"></i>
+                    <p>Select or create a note to get started</p>
+                </div>
+            </div>
+            <div class="note-editor" id="noteEditor">
+                <div class="editor-header">
+                    <input type="text" id="noteTitleInput" class="note-title-input" placeholder="Note Title">
+                    <button id="deleteNoteBtn" class="delete-btn" title="Delete note">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="editor-toolbar" id="editorToolbar">
+                    <button class="toolbar-btn" data-command="bold">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="toolbar-btn" data-command="italic">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="toolbar-btn" data-command="underline">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" data-command="insertUnorderedList">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="toolbar-btn" data-command="insertOrderedList">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                </div>
+                <div id="noteContentInput" class="note-content-input" contenteditable="true" placeholder="Start typing your note..."></div>
+            </div>
+        </main>
+    </div>
+    <script src="js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('ServiceWorker registered'))
+                .catch(error => console.log('ServiceWorker registration failed:', error));
+        }
+    </script>
+</body>
+</html> 
