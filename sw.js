@@ -5,8 +5,8 @@ const ASSETS_TO_CACHE = [
     '/Hassan-Notes/css/style.css',
     '/Hassan-Notes/js/app.js',
     '/Hassan-Notes/manifest.json',
-    '/Hassan-Notes/images/icon-192x192.png',
-    '/Hassan-Notes/images/icon-512x512.png'
+    '/Hassan-Notes/image.png',
+    '/Hassan-Notes/image512.png'
 ];
 
 // Install event - cache assets
