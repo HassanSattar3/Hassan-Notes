@@ -95,6 +95,10 @@ class NotesApp {
         this.darkModeToggle.innerHTML = this.isDarkMode ? 
             '<i class="fas fa-sun"></i>' : 
             '<i class="fas fa-moon"></i>';
+        
+        // Update PWA theme color based on dark/light mode
+        const themeColor = this.isDarkMode ? '#00d488' : '#00b377';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
     }
 
     handleSearch() {
