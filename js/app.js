@@ -369,7 +369,9 @@ class NotesApp {
         const note = this.notes.find(n => n.id === noteId);
         if (!note) return;
 
-        const shareUrl = `${window.location.origin}${window.location.pathname}?note=${noteId}`;
+        // Use GitHub Pages base URL
+        const baseUrl = 'https://hassansattar3.github.io/Hassan-Notes/';
+        const shareUrl = `${baseUrl}?note=${noteId}`;
         
         // Check if running as PWA
         const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
@@ -460,8 +462,9 @@ class NotesApp {
             const note = this.notes.find(n => n.id === sharedNoteId);
             if (note) {
                 this.selectNote(sharedNoteId);
-                // Clean the URL without reloading the page
-                window.history.replaceState({}, document.title, window.location.pathname);
+                // Clean the URL without reloading the page, preserving the base path
+                const basePath = '/Hassan-Notes/';
+                window.history.replaceState({}, document.title, basePath);
             }
         }
     }
