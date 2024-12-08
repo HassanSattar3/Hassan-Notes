@@ -1,0 +1,12 @@
+remote_theme: pages-themes/minimal@v0.2.0
+title: Notes
+description: Personal Notes Collection
+baseurl: "/Hassan-Notes"  # the subpath of your site, e.g. /blog
+url: "https://hassansattar3.github.io/Hassan-Notes/"  # the base hostname & protocol, this will be auto-filled by GitHub
+plugins:
+  - jekyll-relative-links
+  - jekyll-remote-theme
+relative_links:
+  enabled: true
+  collections: true
+markdown: GFM 
