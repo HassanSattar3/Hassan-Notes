@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
     <title>Hassan Notes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
@@ -11,12 +11,45 @@
     
     <!-- iOS PWA meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Hassan Notes">
-    <meta name="theme-color" content="transparent">
+    <meta name="theme-color" content="#ffffff">
     <meta name="mobile-web-app-capable" content="yes">
-    <!-- Fix for iOS input focus -->
+    
+    <!-- Fix for iOS PWA -->
     <style>
+        body {
+            padding: 0;
+            margin: 0;
+            -webkit-touch-callout: none;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            margin-top: calc(-1 * env(safe-area-inset-top));
+            padding-top: env(safe-area-inset-top);
+            background-color: #ffffff;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-content {
+            padding: 0.5rem 1rem;
+        }
+
         input, [contenteditable=true] {
             -webkit-user-select: text;
             user-select: text;

@@ -4,20 +4,21 @@
     "description": "A personal note-taking application by Hassan",
     "display": "standalone",
     "background_color": "#ffffff",
-    "orientation": "any",
+    "theme_color": "#ffffff",
+    "orientation": "portrait",
     "categories": ["productivity", "utilities"],
     "display_override": ["standalone", "minimal-ui"],
     "start_url": "./",
     "scope": "./",
     "icons": [
         {
-            "src": "/Hassan Notes/image.png",
+            "src": "images/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "/Hassan Notes/image512.png",
+            "src": "images/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
